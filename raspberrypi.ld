@@ -39,16 +39,12 @@ SECTIONS {
  	 *	This is the main code section, it is essentially of unlimited size. (128Mb).
 	 *
 	 **/
-	.text : {
-		*(.text)
-	} > RAM
+	.text : {*(.text)} > RAM
 
 	/*
 	* Next we put the data.
 	*/
-	.data : {
-		*(.data)
-	} > RAM
+	.data : {*(.data)} > RAM
 	
 
 	.bss :
@@ -57,7 +53,7 @@ SECTIONS {
 		*(.bss)
 		*(.bss.*)
 	} > RAM
-	__bss_end = .;	
+	__bss_end = .;		
 	/**
 	 *	Place HEAP here???
 	 **/

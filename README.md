@@ -1,4 +1,4 @@
-# uCOS-II on Raspberry Pi3
+# uCOS-II on Raspberry Pi3 (BCM2837)
 
 This is a very basic port of uCOS-II to Raspberry Pi. The version of uCOS-II we have used is V2.52.  
 

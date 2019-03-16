@@ -32,6 +32,15 @@ irq_handler:        .word OS_CPU_IRQ_ISR//irqHandler to be modified
 fiq_handler:        .word fiq
 
 reset:
+;@    // We start on hypervisor mode. Switch back to SVC
+    mrs r0,cpsr
+    bic r0,r0,#0x1F
+    orr r0,r0,#0x13
+    msr spsr_cxsf,r0
+    add r0,pc,#4
+    msr ELR_hyp,r0
+    eret
+
 	;@	In the reset handler, we need to copy our interrupt vector table to 0x0000, its currently at 0x8000
 
 	mov r0,#0x8000								;@ Store the source pointer
@@ -53,18 +62,16 @@ reset:
     mov sp,#0x8000
 
     ;@ (PSR_FIQ_MODE|PSR_FIQ_DIS|PSR_IRQ_DIS)
-//    mov r0,#0xD1
-//   msr cpsr_c,r0
-//  mov sp,#0x4000
+    //mov r0,#0xD1
+    //msr cpsr_c,r0
+    //mov sp,#0x4000
 
     ;@ (PSR_SYS_MODE|PSR_FIQ_DIS|PSR_IRQ_DIS)
     mov r0,#0xDF
     msr cpsr_c,r0
 	mov sp,#0x4000
-
-	ldr r0, =__bss_start
-	ldr r1, =__bss_end
-
+    ldr r0, =__bss_start
+    ldr r1, =__bss_end
 	mov r2, #0
 
 zero_loop:
@@ -74,11 +81,22 @@ zero_loop:
 	blt		zero_loop
 
 	bl 		DisableInterrupts//to be modified
-	
-	
+        //bl      EnableInterrupts
+
 	;@ 	mov	sp,#0x1000000
 	b main									;@ We're ready?? Lets start main execution!
-	.section .text
+    
+.section .text
+/*
+skip:
+    ;@ stop caching !!!
+    ;@ mrc p15,0,r2,c1,c0,0
+    ;@ bic r2,#0x1000
+    ;@ bic r2,#0x0004
+    ;@ mcr p15,0,r2,c1,c0,0
+
+    mov sp,#0x08000000
+    bl main*/
 
 undefined_instruction:
 	b undefined_instruction
@@ -114,3 +132,12 @@ GET32:
 .globl dummy
 dummy:
     bx lr
+
+.globl get_processor_id
+get_processor_id:
+	//mrs x0, mpidr_el1
+	mrc p15,0,r0,c0,c0,5
+	and    r0, r0,#0xFF
+	bx lr
+
+

@@ -1,6 +1,6 @@
-#include    "ucos/OS_CPU.H"
-#include    "ucos/OS_CFG.H"
-#include    "ucos/uCOS_II.H"
+#include    "os_cpu.h"
+#include    "os_cfg.h"
+#include    "uCOS_II.H"
 
 extern void *memcpy(void *destination,const void *source,unsigned int size);
 
