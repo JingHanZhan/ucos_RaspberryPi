@@ -26,6 +26,13 @@ OBJS += build/userApp.o
 OBJS += lib/libc.a
 OBJS += lib/libgcc.a 
 
+task ?= usrApp/base
+ifeq ($(TASK), base)
+    task := usrApp/base
+else ifeq ($(TASK), mailbox)
+    task := usrApp/mailbox
+endif
+
 clean :
 	rm -f build/*.o
 	rm -f *.bin
@@ -47,7 +54,7 @@ build/%.o : port/%.c
 build/%.o : bsp/%.c
 	$(ARMGNU)-gcc $(COPS)  -c -o $@ $<
 	
-build/%.o : usrApp/%.c
+build/%.o : $(task)/%.c
 	$(ARMGNU)-gcc $(COPS) -MMD  -c -o $@ $<
 
 build/ucos_ii.o : ucos/ucos_ii.c
